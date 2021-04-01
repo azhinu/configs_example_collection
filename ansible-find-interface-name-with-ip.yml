@@ -1,0 +1,9 @@
+- name: Getting interface name
+  set_fact:
+    firewall_internal_interface: "{{ item }}"
+  when: vars['ansible_'~item].ipv4.address|default('0.0.0.0') == ldap_internal_ip
+  with_items:
+    - "{{ ansible_interfaces }}"
+- name: Debug
+  debug:
+    msg: "{{ firewall_internal_interface }}"

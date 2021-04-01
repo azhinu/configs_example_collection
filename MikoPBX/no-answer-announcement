@@ -1,0 +1,5 @@
+1,Answer()
+n(begin),Noop(Playing announcement no-answer-announcement)
+n,AGI(cdr_connector.php,${ISTRANSFER}dial_answer)
+n,Playback(/storage/usbdisk1/mikopbx/media/1587111086); Need to find uploaded audio number
+n,Hangup()

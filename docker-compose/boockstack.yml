@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  bookstack:
+    image: linuxserver/bookstack
+    container_name: bookstack
+    environment:
+      DB_HOST: bookstack_db
+      DB_USER: bookstack
+      DB_PASS: examplepass
+      DB_DATABASE: bookstackapp
+    volumes:
+      - boockstack_data:/config
+    restart: unless-stopped
+    depends_on:
+      - bookstack_db
+    networks:
+      - bookstack_network
+      - proxy
+  bookstack_db:
+    image: linuxserver/mariadb
+    container_name: bookstack_db
+    environment:
+      MYSQL_ROOT_PASSWORD: examplepass
+      TZ: Europe/London
+      MYSQL_DATABASE: bookstackapp
+      MYSQL_USER: bookstack
+      MYSQL_PASSWORD: examplepass
+    volumes:
+      - db:/config
+    restart: unless-stopped
+    networks:
+      - bookstack_network
+
+volumes:
+  db:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./db
+  boockstack_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./boockstack_data
+
+networks:
+  bookstack_network:
+  proxy:
+    external: true

@@ -1,0 +1,24 @@
+version: '3'
+
+services:
+  app:
+    image: grafana/grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      GF_INSTALL_PLUGINS: grafana-piechart-panel
+    networks:
+      - proxy
+    restart: unless-stopped
+
+volumes:
+  grafana_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /data/grafana/grafana_data
+
+networks:
+  proxy:
+    external: true

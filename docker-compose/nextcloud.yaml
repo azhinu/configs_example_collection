@@ -1,0 +1,101 @@
+#This project will deploy NextCloud with mariadb and Nginx proxy
+version: '3'
+
+services:
+
+  nginx:
+    image: jwilder/nginx-proxy:alpine
+#    labels:
+#      - "com.github.jrcs.letsencrypt_nginx_proxy_companion.nginx_proxy=true"
+    container_name: nextcloud-nginx
+    networks:
+      - nextcloud_network
+    ports:
+      - 80:80
+#      - 443:443
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:rw
+      - ./nginx/vhost.d:/etc/nginx/vhost.d:rw
+      - ./nginx/html:/usr/share/nginx/html:rw
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    restart: unless-stopped
+
+#  letsencrypt:
+#    image: jrcs/letsencrypt-nginx-proxy-companion
+#    container_name: nextcloud-letsencrypt
+#    depends_on:
+#      - nginx
+#    networks:
+#      - nextcloud_network
+#    volumes:
+#      - ./nginx/certs:/etc/nginx/certs:rw
+#      - ./nginx/vhost.d:/etc/nginx/vhost.d:rw
+#      - ./nginx/html:/usr/share/nginx/html:rw
+#      - /etc/localtime:/etc/localtime:ro
+#      - /var/run/docker.sock:/var/run/docker.sock:ro
+#    restart: unless-stopped
+
+  db:
+    image: mariadb
+    container_name: nextcloud-mariadb
+    networks:
+      - nextcloud_network
+    volumes:
+      - db:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - MYSQL_ROOT_PASSWORD=GlQG0yBs50^vXZ
+      - MYSQL_PASSWORD=8aVJAq5X@87&&w
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+    restart: unless-stopped
+
+  nextcloud:
+     image: nextcloud:latest
+#    build: .
+    container_name: nextcloud-app
+    networks:
+      - nextcloud_network
+    depends_on:
+ #     - letsencrypt
+      - nginx
+      - db
+    volumes:
+      - /data:/data
+      - nextcloud:/var/www/html
+      - ./nextcloud/config:/var/www/html/config
+      - ./nextcloud/custom_apps:/var/www/html/custom_apps
+      - ./nextcloud/data:/var/www/html/data
+      - ./nextcloud/themes:/var/www/html/themes
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - VIRTUAL_HOST=disk.example.com
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=8aVJAq5X@87&&w
+      - MYSQL_HOST=db:5432
+      - NEXTCLOUD_DATA_DIR=/data
+      - NEXTCLOUD_TRUSTED_DOMAINS="nextcloud disk.example.com"
+ #     - LETSENCRYPT_HOST=example@example.com
+ #     - LETSENCRYPT_EMAIL=example@example.com
+    restart: unless-stopped
+
+  onlyoffice:
+    image: onlyoffice/documentserver:latest
+    container_name: nextcloud-office
+    restart: unless-stopped
+    networks:
+      - nextcloud_network
+    depends_on:
+      - nginx
+    environment:
+      - VIRTUAL_HOST=docs.example.com
+
+volumes:
+  nextcloud:
+  db:
+
+networks:
+  nextcloud_network:
