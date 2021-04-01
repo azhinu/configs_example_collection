@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  poste:
+    image: analogic/poste.io
+    container_name: poste
+    environment:
+      TZ: 'Europe/Moscow'
+      HTTPS: 'OFF'
+    hostname: mail.example.com
+    ports:
+      - 25:25
+      - 465:465
+      - 587:587
+      - 993:993
+    networks:
+      - proxy
+    volumes:
+      - poste_data:/data
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+  poste_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /data/poste/poste_data

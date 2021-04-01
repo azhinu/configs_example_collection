@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  app:
+    image: matrixdotorg/synapse
+    environment:
+      SYNAPSE_SERVER_NAME: example.com
+      SYNAPSE_REPORT_STATS: "no"
+    volumes:
+      - synapse_data:/data
+    restart: unless-stopped
+    networks:
+      - proxy
+  synapse-admin:
+    image: awesometechnologies/synapse-admin
+    restart: unless-stopped
+    networks:
+      - synapse_network
+      - proxy
+
+volumes:
+  synapse_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /data/synapse/synapse_data
+
+networks:
+  proxy:
+    external: true

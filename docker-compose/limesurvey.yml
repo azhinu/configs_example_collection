@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+
+  app:
+    image: acspri/limesurvey
+    environment:
+      LIMESURVEY_DB_HOST: db
+      LIMESURVEY_DB_PASSWORD: example
+      LIMESURVEY_ADMIN_USER: admin
+      LIMESURVEY_ADMIN_PASSWORD: password
+      LIMESURVEY_ADMIN_NAME: Lime Administrator
+      LIMESURVEY_ADMIN_EMAIL: lime@lime.lime
+    networks:
+      - limesurvey_net
+      - proxy
+
+  db:
+    image: mariadb
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - limesurvey_net
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+
+networks:
+  limesurvey_net:
+  proxy:
+    external: true
+
+volumes:
+  db_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /data/limesurvey/db_data
