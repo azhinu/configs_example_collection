@@ -1,0 +1,14 @@
+[Unit]
+Description=
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+ExecStart=/usr/bin/nic-reservation up
+ExecStop=/usr/bin/nic-reservation down
+
+[Install]
+WantedBy=multi-user.target
