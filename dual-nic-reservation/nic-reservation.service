@@ -1,5 +1,5 @@
 [Unit]
-Description=
+Description=Network interface failover service
 Wants=network-online.target
 After=network-online.target
 
