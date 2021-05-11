@@ -8,7 +8,7 @@ WHERE
     t1.login = t2.login;
 
 UPDATE b_user
-SET EXTERNAL_AUTH_ID = 'LDAP#id'
+SET EXTERNAL_AUTH_ID = @ldap
 WHERE FIND_IN_SET(b_user.login, @users);
 
 SELECT ID,LOGIN,EXTERNAL_AUTH_ID
