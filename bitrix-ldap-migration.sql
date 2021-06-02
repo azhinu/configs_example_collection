@@ -1,5 +1,5 @@
 SET @users := 'user1,user2';
-SET @ldap := 'LDAP#11'
+SET @ldap := 'LDAP#11';
 
 DELETE t1 FROM b_user t1
 INNER  JOIN b_user t2
