@@ -5,6 +5,11 @@ services:
     image: grafana/grafana
     volumes:
       - grafana_data:/var/lib/grafana
+    logging:
+      driver: "json-file"
+      options:
+          max-file: 5
+          max-size: 20m
     environment:
       GF_INSTALL_PLUGINS: grafana-piechart-panel
     networks:

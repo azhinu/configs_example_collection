@@ -24,6 +24,11 @@ services:
       - ./data:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
+    logging:
+      driver: "json-file"
+      options:
+          max-file: 5
+          max-size: 20m
     ports:
       - 3000:3000
       - 222:22
@@ -41,6 +46,11 @@ services:
       - gitea
     volumes:
       - ./db:/var/lib/postgresql/data
+    logging:
+      driver: "json-file"
+      options:
+          max-file: 5
+          max-size: 20m
 
 networks:
   gitea:

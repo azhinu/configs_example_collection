@@ -20,6 +20,11 @@ services:
       - ./nginx/certs:/etc/nginx/certs:ro
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      logging:
+        driver: "json-file"
+        options:
+            max-file: 5
+            max-size: 20m
     restart: unless-stopped
 
 #  letsencrypt:

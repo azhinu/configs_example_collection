@@ -13,6 +13,11 @@ services:
       - ./php-fpm.d:/usr/local/etc/php/conf.d
       - /data/nginx/html:/usr/share/nginx/html:ro #Destination path should match nginx web root.
       - /etc/localtime:/etc/localtime:ro
+    logging:
+      driver: "json-file"
+      options:
+          max-file: 5
+          max-size: 20m
     restart: unless-stopped
 
   db:
@@ -28,6 +33,11 @@ services:
       MYSQL_PASSWORD: changeme
       MYSQL_DATABASE: example-db
       MYSQL_USER: example-user
+    logging:
+      driver: "json-file"
+      options:
+          max-file: 5
+          max-size: 20m
     restart: unless-stopped
 
 networks:

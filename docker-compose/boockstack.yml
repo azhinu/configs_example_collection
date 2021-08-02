@@ -10,6 +10,11 @@ services:
       DB_DATABASE: bookstackapp
     volumes:
       - boockstack_data:/config
+    logging:
+      driver: "json-file"
+      options:
+          max-file: 5
+          max-size: 20m
     restart: unless-stopped
     depends_on:
       - bookstack_db
@@ -27,6 +32,11 @@ services:
       MYSQL_PASSWORD: examplepass
     volumes:
       - db:/config
+    logging:
+      driver: "json-file"
+      options:
+          max-file: 5
+          max-size: 20m
     restart: unless-stopped
     networks:
       - bookstack_network

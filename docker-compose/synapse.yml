@@ -7,6 +7,11 @@ services:
       SYNAPSE_REPORT_STATS: "no"
     volumes:
       - synapse_data:/data
+    logging:
+      driver: "json-file"
+      options:
+          max-file: 5
+          max-size: 20m
     restart: unless-stopped
     networks:
       - proxy
@@ -16,6 +21,11 @@ services:
     networks:
       - synapse_network
       - proxy
+    logging:
+      driver: "json-file"
+      options:
+          max-file: 5
+          max-size: 20m
 
 volumes:
   synapse_data:
