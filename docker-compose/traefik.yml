@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+    traefik:
+        image: traefik:v2.4
+        ports:
+          - 80:80
+          - 443:443
+        command:
+          - --providers.docker.swarmMode=true
+          - --providers.docker.exposedByDefault=false
+          - --providers.docker.network=proxy
+          - --providers.file.filename=/data/traefik/config.yml
+          - --providers.file.watch=true
+          - --entrypoints.web.address=:80
+          - --entrypoints.web.http.redirections.entryPoint.to=websecure
+          - --entrypoints.web.http.redirections.entryPoint.scheme=https
+          - --entrypoints.websecure.address=:443
+          - --accesslog
+          - --log.level=info
+        environment:
+          - TZ=Europe/Moscow
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock:ro
+          - /data/traefik:/data/traefik
+        networks:
+          - proxy
+        deploy:
+            mode: global
+            placement:
+                constraints:
+                    - node.role == manager
+networks:
+    proxy:
+        external: true
