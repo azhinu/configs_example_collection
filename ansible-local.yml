@@ -1,9 +1,12 @@
-
+#syntax=source.ansible
 ---
-- hosts: 127.0.0.1
-  connection: local
+- hosts: local
+  connection: docker
+# - hosts: 127.0.0.1
+  # connection: local
+  # become: true
   vars:
   tasks:
    - name: test
      debug:
-      msg: 
+      msg:
