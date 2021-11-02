@@ -2,27 +2,27 @@ version: '3'
 
 services:
   app:
-    image: grafana/grafana
+    image: prom/prometheus
     volumes:
-      - grafana_data:/var/lib/grafana
-    environment:
-      GF_INSTALL_PLUGINS: grafana-piechart-panel
+      - prometheus_data:/prometheus
+    user: root
     networks:
       - proxy
+    command: --web.enable-lifecycle
     restart: unless-stopped
     logging:
       driver: "json-file"
       options:
-        max-file: "5"
-        max-size: "20m"
+          max-file: "5"
+          max-size: "20m"
 
 volumes:
-  grafana_data:
+  prometheus_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: /data/grafana/grafana_data
+      device: /data/prometheus/prometheus_data
 
 networks:
   proxy:

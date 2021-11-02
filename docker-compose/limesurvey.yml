@@ -17,8 +17,8 @@ services:
     logging:
       driver: "json-file"
       options:
-          max-file: 5
-          max-size: 20m
+        max-file: "5"
+        max-size: "20m"
 
   db:
     image: mariadb
@@ -27,8 +27,8 @@ services:
     logging:
       driver: "json-file"
       options:
-          max-file: 5
-          max-size: 20m
+        max-file: "5"
+        max-size: "20m"
     networks:
       - limesurvey_net
     environment:

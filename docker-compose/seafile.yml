@@ -10,11 +10,6 @@ services:
     volumes:
       - ./data:/shared   # Requested, specifies the path to Seafile data persistent store.
       - /certs:/certs/
-    logging:
-      driver: "json-file"
-      options:
-          max-file: 5
-          max-size: 20m
     environment:
       - DB_HOST=db
       - DB_ROOT_PASSWD=db_passwd  # Requested, the value shuold be root's password of MySQL service.
@@ -28,6 +23,11 @@ services:
       - memcached
     networks:
       - seafile-net
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "20m"
 
   db:
     image: mariadb:10.1
@@ -38,13 +38,13 @@ services:
       - MYSQL_LOG_CONSOLE=true
     volumes:
       - ./db:/var/lib/mysql  # Requested, specifies the path to MySQL data persistent store.
+    networks:
+      - seafile-net
     logging:
       driver: "json-file"
       options:
-          max-file: 5
-          max-size: 20m
-    networks:
-      - seafile-net
+          max-file: "5"
+          max-size: "20m"
 
   memcached:
     image: memcached:1.5.6-alpine
@@ -56,22 +56,22 @@ services:
     logging:
       driver: "json-file"
       options:
-          max-file: 5
-          max-size: 20m
+          max-file: "5"
+          max-size: "20m"
 
   onlyoffice:
     image: onlyoffice/documentserver
     container_name: seafile-documentserver
     volumes:
       - ./onlyoffice/local.json:/etc/onlyoffice/documentserver/local.json
-    logging:
-      driver: "json-file"
-      options:
-          max-file: 5
-          max-size: 20m
     restart: unless-stopped
     networks:
       - seafile-net
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "20m"
 
 networks:
   seafile-net:

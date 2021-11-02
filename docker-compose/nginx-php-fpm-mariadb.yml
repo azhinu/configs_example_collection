@@ -16,12 +16,12 @@ services:
       - web_root:/usr/share/nginx/html
       - certs:/etc/nginx/certs:ro
       - /etc/localtime:/etc/localtime:ro
-      logging:
-        driver: "json-file"
-        options:
-            max-file: 5
-            max-size: 20m
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "20m"
 
   db:
     image: mariadb
@@ -31,17 +31,18 @@ services:
     volumes:
       - db:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
-    logging:
-      driver: "json-file"
-      options:
-          max-file: 5
-          max-size: 20m
     environment:
       MYSQL_ROOT_PASSWORD: changeme
       MYSQL_PASSWORD: changeme
       MYSQL_DATABASE: example-db
       MYSQL_USER: example-user
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "20m"
+          
 volumes:
   db:
     driver: local

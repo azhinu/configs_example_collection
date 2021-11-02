@@ -17,12 +17,12 @@ services:
       - proxy
     volumes:
       - poste_data:/data
+    restart: unless-stopped
     logging:
       driver: "json-file"
       options:
-          max-file: 5
-          max-size: 20m
-    restart: unless-stopped
+          max-file: "5"
+          max-size: "20m"
 
 networks:
   proxy:

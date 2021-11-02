@@ -14,11 +14,6 @@ services:
     restart: unless-stopped
     volumes:
       - uploads:/app/uploads
-    logging:
-      driver: "json-file"
-      options:
-          max-file: 5
-          max-size: 20m
     environment:
       PORT: 3000
       ROOT_URL: https://chat.example.com
@@ -30,6 +25,12 @@ services:
     networks:
       - rocketchat_net
       - proxy
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "20m"
+
   mongo:
     image: mongo:4.0
     restart: unless-stopped
@@ -43,6 +44,11 @@ services:
     command: mongod --smallfiles --oplogSize 128 --replSet rs0 --storageEngine=mmapv1
     networks:
       - rocketchat_net
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "20m"
 
   # this container's job is just run the command to initialize the replica set.
   # it will run the command and remove himself (it will not stay running)
@@ -63,6 +69,11 @@ services:
       - mongo
     networks:
       - rocketchat_net
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "20m"
 
   # hubot, the popular chatbot (add the bot user first and change the password before starting this image)
   hubot:
@@ -87,6 +98,11 @@ services:
           max-size: 20m
     networks:
       - rocketchat_net
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "20m"
 
 networks:
   rocketchat_net:

@@ -23,8 +23,8 @@ services:
       logging:
         driver: "json-file"
         options:
-            max-file: 5
-            max-size: 20m
+          max-file: "5"
+          max-size: "20m"
     restart: unless-stopped
 
 #  letsencrypt:
@@ -56,6 +56,11 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "20m"
 
   nextcloud:
      image: nextcloud:latest
@@ -86,6 +91,11 @@ services:
  #     - LETSENCRYPT_HOST=example@example.com
  #     - LETSENCRYPT_EMAIL=example@example.com
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "20m"
 
   onlyoffice:
     image: onlyoffice/documentserver:latest
@@ -97,6 +107,11 @@ services:
       - nginx
     environment:
       - VIRTUAL_HOST=docs.example.com
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "20m"
 
 volumes:
   nextcloud:

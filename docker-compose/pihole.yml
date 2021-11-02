@@ -21,16 +21,16 @@ services:
       # - './var-log/pihole.log:/var/log/pihole.log'
     # Recommended but not required (DHCP needs NET_ADMIN)
     #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-    logging:
-      driver: "json-file"
-      options:
-          max-file: 5
-          max-size: 20m
     networks:
       - proxy
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+          max-file: "5"
+          max-size: "20m"
 
 volumes:
   pihole-setting:

@@ -29,6 +29,12 @@ services:
             placement:
                 constraints:
                     - node.role == manager
+        logging:
+          driver: "json-file"
+          options:
+              max-file: "5"
+              max-size: "20m"
+              
 networks:
     proxy:
         external: true
