@@ -1,77 +1,55 @@
 version: '3'
 services:
   seafile:
-    image: seafileltd/seafile-mc:latest
+    image: seafileltd/seafile-mc
     container_name: seafile
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"  # If https is enabled, cancel the comment.
+    environment:
+      DB_HOST: db
+      DB_ROOT_PASSWD: db_passwd  # Requested, the value shuold be root's password of MySQL service.
+      SEAFILE_ADMIN_EMAIL: admin@example.com # Specifies Seafile admin user, default is 'me@example.com'.
+      SEAFILE_ADMIN_PASSWORD: passwd     # Specifies Seafile admin password, default is 'asecret'.
+      SEAFILE_SERVER_LETSENCRYPT: false   # Whether to use https or not.
+      SEAFILE_SERVER_HOSTNAME: example.com # Specifies your host name if https is enabled.
     volumes:
       - ./data:/shared   # Requested, specifies the path to Seafile data persistent store.
-      - /certs:/certs/
-    environment:
-      - DB_HOST=db
-      - DB_ROOT_PASSWD=db_passwd  # Requested, the value shuold be root's password of MySQL service.
-      - TIME_ZONE=Etc/UTC  # Optional, default is UTC. Should be uncomment and set to your local time zone.
-      - SEAFILE_ADMIN_EMAIL=admin@example.com # Specifies Seafile admin user, default is 'me@example.com'.
-      - SEAFILE_ADMIN_PASSWORD=passwd     # Specifies Seafile admin password, default is 'asecret'.
-      - SEAFILE_SERVER_LETSENCRYPT=false   # Whether to use https or not.
-      - SEAFILE_SERVER_HOSTNAME=example.com # Specifies your host name if https is enabled.
+      - ./certs:/certs/
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - seafile-net
     depends_on:
       - db
       - memcached
-    networks:
-      - seafile-net
-    logging:
-      driver: "json-file"
-      options:
-          max-file: "5"
-          max-size: "20m"
+    restart: unless-stopped
 
   db:
     image: mariadb:10.1
     container_name: seafile-mysql
-    restart: unless-stopped
     environment:
-      - MYSQL_ROOT_PASSWORD=db_passwd  # Requested, set the root's password of MySQL service.
-      - MYSQL_LOG_CONSOLE=true
+      MYSQL_ROOT_PASSWORD: db_passwd  # Requested, set the root's password of MySQL service.
     volumes:
       - ./db:/var/lib/mysql  # Requested, specifies the path to MySQL data persistent store.
     networks:
       - seafile-net
-    logging:
-      driver: "json-file"
-      options:
-          max-file: "5"
-          max-size: "20m"
+    restart: unless-stopped
 
   memcached:
     image: memcached:1.5.6-alpine
     container_name: seafile-memcached
-    restart: unless-stopped
     entrypoint: memcached -m 256
     networks:
       - seafile-net
-    logging:
-      driver: "json-file"
-      options:
-          max-file: "5"
-          max-size: "20m"
+    restart: unless-stopped
 
   onlyoffice:
     image: onlyoffice/documentserver
     container_name: seafile-documentserver
     volumes:
       - ./onlyoffice/local.json:/etc/onlyoffice/documentserver/local.json
-    restart: unless-stopped
     networks:
       - seafile-net
-    logging:
-      driver: "json-file"
-      options:
-          max-file: "5"
-          max-size: "20m"
+    restart: unless-stopped
 
 networks:
   seafile-net:

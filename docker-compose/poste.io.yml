@@ -4,25 +4,20 @@ services:
   poste:
     image: analogic/poste.io
     container_name: poste
-    environment:
-      TZ: 'Europe/Moscow'
-      HTTPS: 'OFF'
     hostname: mail.example.com
+    environment:
+      TZ: 'UTC'
+      HTTPS: 'OFF'
     ports:
       - 25:25
       - 465:465
       - 587:587
       - 993:993
-    networks:
-      - proxy
     volumes:
       - poste_data:/data
+    networks:
+      - proxy
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-          max-file: "5"
-          max-size: "20m"
 
 networks:
   proxy:

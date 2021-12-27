@@ -1,4 +1,4 @@
-#This project will deploy PHP FPM and MadriaDB
+#This project will deploy PHP FPM ONLY (without web server) and MadriaDB
 version: '3'
 
 services:
@@ -6,19 +6,13 @@ services:
   core:
     image: php:fpm-alpine
     container_name: php-core
+    volumes:
+      - ./php-fpm.d:/usr/local/etc/php/conf.d
+      - ./webroot:/usr/share/nginx/html:ro #This bind should match your existing webroot
     networks:
       - php
       - proxy
-    volumes:
-      - ./php-fpm.d:/usr/local/etc/php/conf.d
-      - /data/nginx/html:/usr/share/nginx/html:ro #Destination path should match nginx web root.
-      - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-          max-file: "5"
-          max-size: "20m"
 
   db:
     image: mariadb
@@ -27,18 +21,12 @@ services:
       - php
     volumes:
       - ./db:/var/lib/mysql
-      - /etc/localtime:/etc/localtime:ro
     environment:
       MYSQL_ROOT_PASSWORD: changeme
       MYSQL_PASSWORD: changeme
       MYSQL_DATABASE: example-db
       MYSQL_USER: example-user
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-          max-file: "5"
-          max-size: "20m"
 
 networks:
   php:

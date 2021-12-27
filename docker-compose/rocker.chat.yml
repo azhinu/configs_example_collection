@@ -2,7 +2,7 @@ version: '3.6'
 
 services:
   app:
-    image: rocketchat/rocket.chat:latest
+    image: rocketchat/rocket.chat
     command: >
       bash -c
         "for i in `seq 1 30`; do
@@ -11,44 +11,31 @@ services:
           echo \"Tried $$i times. Waiting 5 secs...\";
           sleep 5;
         done; (exit $$s)"
-    restart: unless-stopped
-    volumes:
-      - uploads:/app/uploads
     environment:
       PORT: 3000
       ROOT_URL: https://chat.example.com
       MONGO_URL: mongodb://mongo:27017/rocketchat
       MONGO_OPLOG_URL: mongodb://mongo:27017/local
       MAIL_URL: smtp://smtp.email
-    depends_on:
-      - mongo
+    volumes:
+      - uploads:/app/uploads
     networks:
       - rocketchat_net
       - proxy
-    logging:
-      driver: "json-file"
-      options:
-          max-file: "5"
-          max-size: "20m"
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
 
   mongo:
     image: mongo:4.0
-    restart: unless-stopped
+    command: mongod --smallfiles --oplogSize 128 --replSet rs0 --storageEngine=mmapv1
     volumes:
      - db_data:/data/db
-    logging:
-     driver: "json-file"
-     options:
-         max-file: 5
-         max-size: 20m
-    command: mongod --smallfiles --oplogSize 128 --replSet rs0 --storageEngine=mmapv1
     networks:
       - rocketchat_net
-    logging:
-      driver: "json-file"
-      options:
-          max-file: "5"
-          max-size: "20m"
+    restart: unless-stopped
+
 
   # this container's job is just run the command to initialize the replica set.
   # it will run the command and remove himself (it will not stay running)
@@ -69,40 +56,8 @@ services:
       - mongo
     networks:
       - rocketchat_net
-    logging:
-      driver: "json-file"
-      options:
-          max-file: "5"
-          max-size: "20m"
 
   # hubot, the popular chatbot (add the bot user first and change the password before starting this image)
-  hubot:
-    image: rocketchat/hubot-rocketchat:latest
-    restart: unless-stopped
-    environment:
-      ROCKETCHAT_URL: app:3000
-      ROCKETCHAT_ROOM: GENERAL
-      ROCKETCHAT_USER: bot
-      ROCKETCHAT_PASSWORD: botpassword
-      BOT_NAME: bot
-      EXTERNAL_SCRIPTS: hubot-help,hubot-seen,hubot-links,hubot-diagnostics
-      # you can add more scripts as you'd like here, they need to be installable by npm
-    depends_on:
-      - app
-    volumes:
-      - scripts:/home/hubot/scripts
-    logging:
-      driver: "json-file"
-      options:
-          max-file: 5
-          max-size: 20m
-    networks:
-      - rocketchat_net
-    logging:
-      driver: "json-file"
-      options:
-          max-file: "5"
-          max-size: "20m"
 
 networks:
   rocketchat_net:

@@ -14,25 +14,15 @@ services:
     networks:
       - limesurvey_net
       - proxy
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "5"
-        max-size: "20m"
 
   db:
     image: mariadb
-    volumes:
-      - db_data:/var/lib/mysql
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "5"
-        max-size: "20m"
-    networks:
-      - limesurvey_net
     environment:
       MYSQL_ROOT_PASSWORD: example
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - limesurvey_net
 
 networks:
   limesurvey_net:

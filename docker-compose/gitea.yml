@@ -2,9 +2,8 @@ version: 3
 #https://docs.gitea.io/en-us/install-with-docker/
 services:
   app:
-    image: gitea/gitea:1.13.1
+    image: gitea/gitea
     container_name: gitea
-    restart: unless-stopped
     environment:
       DOMAIN: git.example.local
       #Port to download git by ssh
@@ -18,39 +17,28 @@ services:
       DB_NAME: gitea
       DB_USER: gitea
       DB_PASSWD: gitea
-    networks:
-      - gitea
     volumes:
       - ./data:/data
-      - /etc/timezone:/etc/timezone:ro
-      - /etc/localtime:/etc/localtime:ro
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "5"
-        max-size: "20m"
     ports:
       - 3000:3000
       - 222:22
+    networks:
+      - gitea
     depends_on:
       - db
+    restart: unless-stopped
 
   db:
     image: postgres:alpine
-    restart: unless-stopped
     environment:
       POSTGRES_USER: gitea
       POSTGRES_PASSWORD: gitea
       POSTGRES_DB: gitea
-    networks:
-      - gitea
     volumes:
       - ./db:/var/lib/postgresql/data
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "5"
-        max-size: "20m"
+    networks:
+      - gitea
+    restart: unless-stopped
 
 networks:
   gitea:

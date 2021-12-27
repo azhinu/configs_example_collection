@@ -1,51 +1,20 @@
-version: "3.8"
+version: "3"
 
 # https://github.com/pi-hole/docker-pi-hole/blob/master/README.md
 
 services:
   pihole:
-    image: pihole/pihole:latest
-    # For DHCP it is recommended to remove these ports and instead add: network_mode: "host"
+    image: pihole/pihole
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "67:67/udp"
+      - 53:53/tcp
+      - 53:53/udp
+      - 67:67/udp
     environment:
-      TZ: 'Europe/Moscow'
+      TZ: 'UTC'
       # WEBPASSWORD: 'set a secure password here or it will be random'
-    # Volumes store your data between container upgrades
     volumes:
-      - 'pihole-setting:/etc/pihole/'
-      - 'pihole-dnsmasq:/etc/dnsmasq.d/'
-      # run `touch ./var-log/pihole.log` first unless you like errors
-      # - './var-log/pihole.log:/var/log/pihole.log'
-    # Recommended but not required (DHCP needs NET_ADMIN)
-    #   https://github.com/pi-hole/docker-pi-hole#note-on-capabilities
-    networks:
-      - proxy
+      - ./conf:/etc/pihole/
+      - ./dnsmasq:/etc/dnsmasq.d/
     cap_add:
       - NET_ADMIN
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-          max-file: "5"
-          max-size: "20m"
-
-volumes:
-  pihole-setting:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./pihole
-  pihole-dnsmasq:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./dnsmasq.d
-
-networks:
-  proxy:
-    external: true

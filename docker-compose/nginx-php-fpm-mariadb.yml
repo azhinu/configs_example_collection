@@ -4,70 +4,32 @@ version: '3'
 services:
 
   core:
-    image: wyveo/nginx-php-fpm:latest
+    image: wyveo/nginx-php-fpm
     container_name: nginx-php-core
-    networks:
-      - nginx-php
+    volumes:
+      - ./conf.d:/etc/nginx/conf.d:ro
+      - ./certs:/etc/nginx/certs:ro
+      - ./web_root:/usr/share/nginx/html
     ports:
       - 80:80
       - 443:443
-    volumes:
-      - conf.d:/etc/nginx/conf.d:rw
-      - web_root:/usr/share/nginx/html
-      - certs:/etc/nginx/certs:ro
-      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - nginx-php
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-          max-file: "5"
-          max-size: "20m"
 
   db:
     image: mariadb
     container_name: nginx-php-mariadb
-    networks:
-      - nginx-php
-    volumes:
-      - db:/var/lib/mysql
-      - /etc/localtime:/etc/localtime:ro
     environment:
       MYSQL_ROOT_PASSWORD: changeme
       MYSQL_PASSWORD: changeme
       MYSQL_DATABASE: example-db
       MYSQL_USER: example-user
+    volumes:
+      - ./db:/var/lib/mysql
+    networks:
+      - nginx-php
     restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-          max-file: "5"
-          max-size: "20m"
-          
-volumes:
-  db:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./db
-  conf.d:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./conf.d
-  web_root:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./web_root
-  certs:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: ./certs
 
 networks:
   nginx-php:

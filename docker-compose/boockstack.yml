@@ -1,8 +1,7 @@
-version: "3.8"
+version: "3"
 services:
   bookstack:
     image: linuxserver/bookstack
-    container_name: bookstack
     environment:
       DB_HOST: bookstack_db
       DB_USER: bookstack
@@ -10,36 +9,26 @@ services:
       DB_DATABASE: bookstackapp
     volumes:
       - boockstack_data:/config
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "5"
-        max-size: "20m"
-    restart: unless-stopped
-    depends_on:
-      - bookstack_db
     networks:
       - bookstack_network
       - proxy
+    depends_on:
+      - bookstack_db
+    restart: unless-stopped
+
   bookstack_db:
     image: linuxserver/mariadb
     container_name: bookstack_db
     environment:
       MYSQL_ROOT_PASSWORD: examplepass
-      TZ: Europe/London
       MYSQL_DATABASE: bookstackapp
       MYSQL_USER: bookstack
       MYSQL_PASSWORD: examplepass
     volumes:
       - db:/config
-    logging:
-      driver: "json-file"
-      options:
-          max-file: 5
-          max-size: 20m
-    restart: unless-stopped
     networks:
       - bookstack_network
+    restart: unless-stopped
 
 volumes:
   db:
@@ -47,13 +36,13 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: ./db
+      device: /data/db
   boockstack_data:
     driver: local
     driver_opts:
       type: none
       o: bind
-      device: ./boockstack_data
+      device: /data/boockstack_data
 
 networks:
   bookstack_network:
