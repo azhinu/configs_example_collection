@@ -1,4 +1,4 @@
-#!/usr/bin/env
+#!/usr/bin/env bash
 
 
 read -sp 'Password: ' password
@@ -8,4 +8,3 @@ read -p 'privilege escalation' disk
 echo 'Start rescan disk'
 echo 1>/sys/class/block/sdd/device/rescan
 cfdisk
- 
