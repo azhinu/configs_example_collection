@@ -23,7 +23,7 @@ database='database'
 # Output path to store archives
 archivePath='/mnt/backup'
 # How old data to archive. Can accept number end type. E.g 1 month / 40 days. Rounded to months.
-timeold="$(date +"%Y%m -d 1 month")"
+timeold="$(date +"%Y%m" -d "-1 month")"
 # Dry run
 dryrun=true
 # Verbose output
