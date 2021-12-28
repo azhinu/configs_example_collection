@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2086,SC2046
 
 # This script find partition in selected ClickHouse database that older than $timeold, and archive it.
 # Script pipeline:
@@ -62,7 +63,7 @@ function parseArgs() {
         shift # past value
         ;;
       -t|--timeold)
-        timeold="$(date +"%Y%m -d $2")"
+        timeold="$(date +"%Y%m" -d "-$2")"
         shift # past argument
         shift # past value
         ;;
@@ -100,13 +101,13 @@ function parseArgs() {
 function initChecks() {
   #Try connect clickhouseClient and find $datastorePath
   if [[ $datastorePath == '' ]]; then
-    datastorePath=$(clickhouse-client --query "SELECT data_path FROM system.databases WHERE name = '$database';")
+    datastorePath=$($clickhouseClient --query "SELECT data_path FROM system.databases WHERE name = '$database';")
     if [[ $datastorePath == '' ]]; then
       echo -e "${BLUE}Can't get datastore path. Check database name."
       exit 0
     fi
   else
-    clickhouse-client --query "exit;"
+    $clickhouseClient --query "exit;"
   fi
 
   if [[ ! -w $archivePath ]]; then
@@ -130,9 +131,9 @@ function initChecks() {
     '${GRN}'database='${ORNG}$database'                  ,'${BLUE}'|'${ORNG}' --database
     '${GRN}'datastorePath='${ORNG}$datastorePath'        ,'${BLUE}'|'${ORNG}' none
     '${GRN}'archivePath='${ORNG}$archivePath'            ,'${BLUE}'|'${ORNG}' --output
-    '${GRN}'timeold='${ORNG}$timeold${BLUE}' (Processed)    ,|'${ORNG}' --timeold
+    '${GRN}'timeold='${ORNG}$timeold${BLUE}' (Processed) ,|'${ORNG}' --timeold
     '${GRN}'dryrun='${ORNG}$dryrun'                      ,'${BLUE}'|'${ORNG}' --start
-    '${GRN}'verbose='${ORNG}$verbose'                    ,'${BLUE}'|'${ORNG}' --verbose'${NC} | column -ts ,
+    '${GRN}'verbose='${ORNG}$verbose'                    ,'${BLUE}'|'${ORNG}' --verbose'${NC} | column -ts ","
   fi
 }
 
