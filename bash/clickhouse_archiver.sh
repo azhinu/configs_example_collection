@@ -83,8 +83,8 @@ function parseArgs() {
       '${GRN}'Flags:
       '${ORNG}'    |  --start               '${NC}' — Start script. Otherwise run dry-mode
       '${ORNG}'-c  |  --client              '${NC}' — Path to ClickHouse client           | Default: clickhouse-client
-      '${ORNG}'-d  |  --database            '${NC}' - Working database                    | Default: pcs_logs
-      '${ORNG}'-s  |  --datastore            '${NC}' - Working database                    | Default: auto
+      '${ORNG}'-d  |  --database            '${NC}' — Working database                    | Default: pcs_logs
+      '${ORNG}'-s  |  --datastore           '${NC}' — Datatase store directory            | Default: auto
       '${ORNG}'-o  |  --output              '${NC}' — Path to store archives.             | Default: /u01/clickhouse
       '${ORNG}'-t  |  --timeold '${GRN}' "1 month"  '${NC}' — How old data archive. Accept number and type. Rounded to 1 month | Default: 1 month
       '${ORNG}'-v  |  --verbose             '${NC}' — Detailed output
@@ -144,7 +144,7 @@ echo -e "\n${GRN}Archive old ClickHouse data script starts..${NC}\n"
 
 
 #Get old partition lists:
-partitionList=$($clickhouseClient --query="SELECT partition, name, database, table FROM system.parts WHERE partition < '$timeold' AND database = '$database';")
+partitionList=$($clickhouseClient --query="SELECT partition, name, database, table FROM system.parts WHERE partition < '$timeold' AND database = '$database' AND active;")
 echo -e "${BLUE}This partitions will affected! \n${ORNG}Part\tName\t\tDatabase\tTable\n$partitionList${NC}\n"
 
 
@@ -157,7 +157,7 @@ for table in $tablesList; do
   for partition in $partitionList; do
     echo -e "${GRN}DETACH PARTITION ${ORNG}$partition${GRN} FROM${ORNG} $database.$table${NC}"
     if [[ $dryrun == 'false' ]]; then
-      $clickhouseClient --query="ALTER TABLE $database.$table DETACH PARTITION '$partition'";
+      $clickhouseClient --query="ALTER TABLE $database.$table DETACH PARTITION '$partition';"
     fi
   done
 done

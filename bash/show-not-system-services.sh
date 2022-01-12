@@ -1,0 +1,1 @@
+sudo systemctl --type=service list-units | grep -Ev 'lvm|rhel|auditd|chrony|cron|dbus|gcstartup|getty|gssproxy|kdump|kmod-static-node|network|polkit|rhnsd|rhsmcertd|rpcbind|rsyslog|sshd|sssd|sysstat|systemd|tuned|irqbalance|xinetd'
