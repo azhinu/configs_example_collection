@@ -1,0 +1,15 @@
+[Unit]
+Description=Email parsing tool
+After=network.target
+Requires=something
+
+[Service]
+Type=simple
+Restart=on-failure
+PIDFile=/run/my-service
+ExecStart=/my-service --arg
+ExecStop=/bin/kill -SIGTERM $MAINPID
+RestartSec=10s
+
+[Install]
+WantedBy=multi-user.target

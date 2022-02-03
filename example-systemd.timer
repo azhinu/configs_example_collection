@@ -1,0 +1,13 @@
+[Unit]
+Description=Run Email parsing tool weekly.
+
+[Timer]
+#Weekly
+OnCalendar=weekly
+#Dont reset timer on reboot
+Persistent=true
+#Randomize start time up to 1h
+RandomizedDelaySec=1h
+
+[Install]
+WantedBy=timers.target
