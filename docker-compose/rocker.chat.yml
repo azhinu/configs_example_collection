@@ -2,7 +2,7 @@ version: '3.6'
 
 services:
   app:
-    image: rocketchat/rocket.chat
+    image: registry.rocket.chat/rocketchat/rocket.chat
     command: >
       bash -c
         "for i in `seq 1 30`; do
@@ -20,7 +20,7 @@ services:
     volumes:
       - uploads:/app/uploads
     networks:
-      - rocketchat_net
+      - net
       - proxy
     depends_on:
       - mongo
@@ -28,8 +28,8 @@ services:
 
 
   mongo:
-    image: mongo:4.0
-    command: mongod --smallfiles --oplogSize 128 --replSet rs0 --storageEngine=mmapv1
+    image: mongo:5
+    command: mongod --oplogSize 128 --replSet rs0 --storageEngine=wiredTiger
     volumes:
      - db_data:/data/db
     networks:
@@ -40,27 +40,25 @@ services:
   # this container's job is just run the command to initialize the replica set.
   # it will run the command and remove himself (it will not stay running)
   mongo-init-replica:
-    image: mongo:4.0
+    image: mongo:5
     command: >
       bash -c
-        "for i in `seq 1 30`; do
+        "for (( ; ; )); do
           mongo mongo/rocketchat --eval \"
             rs.initiate({
               _id: 'rs0',
               members: [ { _id: 0, host: 'localhost:27017' } ]})\" &&
           s=$$? && break || s=$$?;
-          echo \"Tried $$i times. Waiting 5 secs...\";
+          echo \"Could not reach MongoDB. Waiting 5 secs ...\";
           sleep 5;
         done; (exit $$s)"
     depends_on:
       - mongo
     networks:
-      - rocketchat_net
-
-  # hubot, the popular chatbot (add the bot user first and change the password before starting this image)
+      - net
 
 networks:
-  rocketchat_net:
+  net:
   proxy:
     external: true
 
