@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  app:
+    image: caddy:alpine
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./data:/data #Certs, etc
+    ports:
+      - 443:443
+    networks:
+      - net
+    restart: unless-stopped
+    command: caddy run --config /etc/caddy/Caddyfile --adapter caddyfile --watch
+
+
+networks:
+  net:
+    attachable: true

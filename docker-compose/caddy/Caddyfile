@@ -1,0 +1,26 @@
+{
+  skip_install_trust #Dont install self-signed cert to trusted
+  default_sni localhost #Localhost as default host
+
+  servers :443 {
+    protocol {
+      experimental_http3 #Enable HTTP3 for all servers
+    }
+  }
+}
+
+(cloudflare) {
+  tls /data/cf-cert.pem /data/cf-cert.pem #CloudFlare origin cert
+}
+
+
+localhost {
+  import cloudflare
+  error 418 #Return 418 on unknown host
+}
+
+URL {
+  import cloudflare
+  encode zstd #Use zstd compression
+  reverse_proxy container-app:80 #proxy to container
+}
