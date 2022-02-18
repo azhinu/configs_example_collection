@@ -196,7 +196,7 @@ for partition in $detachedList; do
     if [[ ! -w $archivePath/$database/$tableName ]]; then
           mkdir -p "$archivePath/$database/$tableName"
     fi
-    tar -cf "$archivePath/$database/$tableName/${partition##*/}.tar"  -C "${partition%/*}" "${partition##*/}"
+    tar --backup=numbered -cf "$archivePath/$database/$tableName/${partition##*/}.tar"  -C "${partition%/*}" "${partition##*/}"
     rm -rf "$partition"
     echo -e "${BLUE}$database/$tableName/${partition##*/}${GRN} has been compressed! Removing uncompressed files!\n\n${GRN}rm ${ORNG}-rf ${BLUE}$partition${NC}\n"
   fi
