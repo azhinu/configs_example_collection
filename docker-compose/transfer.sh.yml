@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  app:
+    image: dutchcoders/transfer.sh
+    ports:
+      - 8080:8080
+    command: --provider local --basedir /tmp/
+    tmpfs:
+      - /tmp
+    networks:
+      - caddy_net
+    restart: unless-stopped
+
+networks:
+  caddy_net:
+    external: true

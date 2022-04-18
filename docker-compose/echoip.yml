@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  app:
+    image: mpolden/echoip
+    container_name: echoip-app
+    command: -C 500 -H X-Forwarded-For -a GeoLite2-ASN.mmdb -c GeoLite2-City.mmdb -f GeoLite2-Country.mmdb -p -r
+    # Usage of echoip:
+    #   -C int    | Size of response cache. Set to 0 to disable
+    #   -H value  | Header to trust for remote IP, if present (e.g. X-Real-IP)
+    #   -a string | Path to GeoIP ASN database
+    #   -c string | Path to GeoIP city database
+    #   -f string | Path to GeoIP country database
+    #   -l string | Listening address (default ":8080")
+    #   -t string | Path to HTML template directory (default "html")
+    #   -p            | Enable port lookup
+    #   -r              | Perform reverse hostname lookups
+    volumes:
+      # GeoIP DB. Get it here: https://github.com/P3TERX/GeoLite.mmdb
+      - ./GeoLite2-ASN.mmdb:/opt/echoip/GeoLite2-ASN.mmdb
+      - ./GeoLite2-City.mmdb:/opt/echoip/GeoLite2-City.mmdb
+      - ./GeoLite2-Country.mmdb:/opt/echoip/GeoLite2-Country.mmdb
+    networks:
+      - caddy_net
+    restart: unless-stopped
+
+networks:
+  caddy_net:
+    external: true
