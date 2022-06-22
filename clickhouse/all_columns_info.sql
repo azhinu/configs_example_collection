@@ -12,6 +12,7 @@ SELECT
 FROM system.parts_columns AS pc
 LEFT JOIN system.columns AS c
 ON (pc.database = c.database) AND (c.table = pc.table) AND (c.name = pc.column)
+-- You can set database and table here
 WHERE (database LIKE '%') AND (table LIKE '%') AND active
 GROUP BY
   database,
