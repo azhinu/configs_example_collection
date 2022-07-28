@@ -1,4 +1,4 @@
-`docker ps  --format "table {{.ID}}\t{{.Image}}\t{{.Names}}"`
+`docker ps  --format "table {{.ID}}\t{{.Image}}\t{{.Names}}\t{{.Status}}"`
 
 **Placeholder	Description**
 `.ID`	Container ID
