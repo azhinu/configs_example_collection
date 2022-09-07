@@ -4,7 +4,7 @@
 # This script find partition in selected ClickHouse database that older than $timeold, and archive it.
 # Script pipeline:
 # 1. Check variables and permissions
-# 2. Find partitions in $database that older than $timeold
+# 2. Find partitions in $database that older than $timeold by using system.parts max_date or max_time column
 # 3. Detach old partitions
 # 4. Tar without compression detached partitions and save to $archivePath/$database/$tableName/$partition.tar
 # 5. Remove detached partition directory
@@ -23,7 +23,7 @@ database='database'
 # Output path to store archives
 archivePath='/mnt/backup'
 # How old data to archive. Can accept number end type. E.g 1 month / 40 days. Rounded to months.
-timeold="$(date +"%Y%m" -d "-1 month")"
+timeold="$(date +"%Y-%m-%d" -d "-1 month")"
 # Dry run
 dryrun=true
 # Verbose output
@@ -63,7 +63,7 @@ function parseArgs() {
         shift # past value
         ;;
       -t|--timeold)
-        timeold="$(date +"%Y%m" -d "-$2")"
+        timeold="$(date +"%Y-%m-%d" -d "-$2")"
         shift # past argument
         shift # past value
         ;;
@@ -144,28 +144,25 @@ echo -e "\n${GRN}Archive old ClickHouse data script starts..${NC}\n"
 
 
 #Get old partition lists:
-partitionList=$($clickhouseClient --query="SELECT partition, name, database, table FROM system.parts WHERE partition < '$timeold' AND database = '$database' AND active;")
+partitionList=$($clickhouseClient --format=TabSeparatedRaw --query="SELECT partition, name, database, table FROM system.parts WHERE (max_date < '$timeold' and max_date > '0000-00-00' OR max_time < toStartOfDay(toDate('$timeold')) AND max_time > '0000-00-00 00:00:00') AND database = '$database' AND active;")
+
+
 echo -e "${BLUE}This partitions will affected! \n${ORNG}Part\tName\t\tDatabase\tTable\n$partitionList${NC}\n"
 
-
-# Get partitions map
-tablesList=$(echo "$partitionList" | awk '{print $4}')
-partitionList=$(echo "$partitionList" | awk '{print $1}')
-
 # Detach partitions
-for table in $tablesList; do
-  for partition in $partitionList; do
+while read -r partition name database table ; do
+  {
     echo -e "${GRN}DETACH PARTITION ${ORNG}$partition${GRN} FROM${ORNG} $database.$table${NC}"
     if [[ $dryrun == 'false' ]]; then
-      $clickhouseClient --query="ALTER TABLE $database.$table DETACH PARTITION '$partition';"
+      $clickhouseClient --query="ALTER TABLE $database.$table DETACH PARTITION $partition;"
     fi
-  done
-done
+  }
+done <<< "$partitionList"
 
 
 ## Tar and move partitions
 # Find detached partitions
-detachedList=$(find "$datastorePath" -path '**/detached/*' -prune)
+detachedList=$(find "$datastorePath" -path '**/detached/*' -prune || true)
 
 if [[ $verbose == 'true' ]]; then
   echo -e "${BLUE}Detached data list:\n${ORNG}$detachedList${NC}\n"
