@@ -153,7 +153,7 @@ echo -e "${BLUE}This partitions will affected! \n${ORNG}Part\tName\t\tDatabase\t
 while read -r partition name database table ; do
   {
     echo -e "${GRN}DETACH PARTITION ${ORNG}$partition${GRN} FROM${ORNG} $database.$table${NC}"
-    if [[ $dryrun == 'false' ]]; then
+    if [[ $dryrun == 'false' && $partition != '' ]]; then
       $clickhouseClient --query="ALTER TABLE $database.$table DETACH PARTITION $partition;"
     fi
   }
