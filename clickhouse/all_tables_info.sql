@@ -8,8 +8,8 @@ SELECT
     formatReadableSize(sum(data_uncompressed_bytes) AS uncomp_bytes) AS uncomp,
     uncomp_bytes / comp_bytes AS ratio
 FROM system.parts
-WHERE active
+WHERE active AND database != 'system'
 GROUP BY
     database,
     table
-ORDER BY comp_bytes DESC
+ORDER BY comp_bytes DESC;
