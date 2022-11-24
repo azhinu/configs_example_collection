@@ -150,7 +150,7 @@ partitionList=$($clickhouseClient --format=TabSeparatedRaw --query="SELECT parti
 echo -e "${BLUE}This partitions will affected! \n${ORNG}Part\tName\t\tDatabase\tTable\n$partitionList${NC}\n"
 
 # Detach partitions
-while read -r partition name database table ; do
+while read -r partition name db table ; do
   {
     echo -e "${GRN}DETACH PARTITION ${ORNG}$partition${GRN} FROM${ORNG} $database.$table${NC}"
     if [[ $dryrun == 'false' && $partition != '' ]]; then
