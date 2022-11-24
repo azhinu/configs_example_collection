@@ -166,7 +166,8 @@ detachedList=$(find "$datastorePath" -path '**/detached/*' -prune || true)
 
 if [[ $verbose == 'true' ]]; then
   echo -e "${BLUE}Detached data list:\n${ORNG}$detachedList${NC}\n"
-elif [[ $detachedList == '' && $tablesList != '' ]]; then
+fi
+if [[ $detachedList == '' && $tablesList != '' ]]; then
   echo -e "${BLUE}Detached list is ${RED}empy${BLUE}, but some partitions has been ${RED}detached${BLUE}.\nCheck ClickHouse data store path. All detached partition will be moved on next run.${NC}\n"
   exit 0
 fi
