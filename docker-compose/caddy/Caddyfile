@@ -1,26 +1,33 @@
 {
   skip_install_trust #Dont install self-signed cert to trusted
   default_sni localhost #Localhost as default host
-
-  servers :443 {
-    protocol {
-      experimental_http3 #Enable HTTP3 for all servers
-    }
-  }
+	log {
+		format json {
+			time_format common_log
+		}
+	}
 }
 
-(cloudflare) {
-  tls /data/cf-cert.pem /data/cf-cert.pem #CloudFlare origin cert
+# (cloudflare) {
+# 	encode zstd #Use zstd compression
+#   tls /data/cf-cert.pem /data/cf-cert.pem #CloudFlare origin cert
+# }
+
+(default) {
+	encode zstd #Use zstd compression
+	tls {
+		on_demand
+	}
 }
 
 
 localhost {
-  import cloudflare
+  encode zstd
+	tls /data/default.pem
   error 418 #Return 418 on unknown host
 }
 
 URL {
-  import cloudflare
-  encode zstd #Use zstd compression
+  import default
   reverse_proxy container-app:80 #proxy to container
 }
