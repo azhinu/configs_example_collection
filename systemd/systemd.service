@@ -1,7 +1,7 @@
 [Unit]
 Description=Email parsing tool
-After=network.target
-Requires=something
+After=network-online.target
+Requires=network-online.target
 
 [Service]
 Type=simple
