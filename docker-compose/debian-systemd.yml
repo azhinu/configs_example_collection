@@ -1,13 +1,12 @@
-# docker run --name systemd-debian --privileged --cgroupns=host -v /sys/fs/cgroup:/sys/fs/cgroup:rw -v /tmp:/tmp -p 3000:3000 jrei/systemd-debian
+# docker run --name systemd-debian --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v /tmp:/tmp -p 3000:3000 jrei/systemd-debian
 # Actually compose doesn's have cgroupns yet.
 version: '3'
 services:
   app:
-    image: jrei/systemd-debian
+    image: jrei/systemd-debian:12
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup
       - /tmp:/tmp
     ports:
       - 3000:3000
     privileged: true
-    cgroupns: host
