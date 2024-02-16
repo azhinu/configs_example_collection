@@ -3,30 +3,78 @@ services:
   app:
     image: matrixdotorg/synapse
     environment:
-      SYNAPSE_SERVER_NAME: example.com
+      SYNAPSE_CONFIG_PATH: /data/homeserver.yaml
+      SYNAPSE_SERVER_NAME: example.org
       SYNAPSE_REPORT_STATS: "no"
     volumes:
-      - synapse_data:/data
+      - ./synapse_data:/data
+    ports:
+      - 8008:8008
+    networks:
+      - main
+      - proxy
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:14-alpine
+    environment:
+      POSTGRES_DB: synapse
+      POSTGRES_USER: synapse
+      POSTGRES_PASSWORD: passwd
+      POSTGRES_INITDB_ARGS: --encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - ./synapse_db:/var/lib/postgresql/data
+    networks:
+      - main
+    restart: unless-stopped
+
+  element:
+    image: vectorim/element-web
+    volumes:
+      - ./element_config.json:/app/config.json
+    ports:
+      - 8184:8184
     networks:
       - proxy
+    restart: unless-stopped
+
+  # Custom stickers available with dimension
+  # https://github.com/turt2live/matrix-dimension/tree
+  # Can be replaced with https://github.com/maunium/stickerpicker
+  dimension:
+    image: azhinu/dimension:latest
+    volumes:
+      - ./dimension_data:/data
+    ports:
+      - 8081:80
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  # Matrix neb box
+  neb:
+    image: matrixdotorg/go-neb
+    environment:
+      BASE_URL: app:8008
+    volumes:
+      - ./neb_data:/data
+    networks:
+      - main
+    depends_on:
+      - app
     restart: unless-stopped
 
   synapse-admin:
     image: awesometechnologies/synapse-admin
+    ports:
+      - 8080:80
     networks:
-      - synapse_network
       - proxy
     restart: unless-stopped
 
-
-volumes:
-  synapse_data:
-    driver: local
-    driver_opts:
-      type: none
-      o: bind
-      device: /data/synapse/synapse_data
-
 networks:
+  main:
   proxy:
     external: true
