@@ -27,5 +27,5 @@ for target in "$@" ; do
 	rm -f $PEM1 $PEM2
 done
 
-#openssl req -newkey ED25519 -nodes -x509 -days 365 -out cert.pem
-#openssl req -newkey rsa:2048 -nodes -x509 -days 365 -out cert.pem
+#openssl req -newkey ED25519 -nodes -x509 -days 365 -keyout key.pem -out cert.pem
+#openssl req -newkey rsa:2048 -nodes -x509 -days 365 -keyout key.pem  -out cert.pem
